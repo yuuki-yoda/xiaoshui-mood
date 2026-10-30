@@ -1,0 +1,18 @@
+[Unit]
+Description=Xiaoshui Mood Widget Server (小水的心情挂饰)
+After=network.target
+
+[Service]
+Type=simple
+User=admin
+Group=admin
+WorkingDirectory=/home/admin/.openclaw/workspace/ops/mood
+ExecStart=/usr/bin/python3 /home/admin/.openclaw/workspace/ops/mood/server.py
+Restart=always
+RestartSec=3
+Environment=MOOD_PORT=19005
+StandardOutput=append:/home/admin/.openclaw/workspace/ops/mood/server.log
+StandardError=append:/home/admin/.openclaw/workspace/ops/mood/server.log
+
+[Install]
+WantedBy=multi-user.target

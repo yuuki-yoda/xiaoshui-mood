@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>小水的心情</title>
+<style>
+  :root{
+    --bg:#0e1220; --card:rgba(255,255,255,.045); --line:rgba(255,255,255,.10);
+    --text:#e8ecf5; --dim:#8b93a7; --accent:#8fa3bf;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{background:#080a12}
+  html,body{margin:0;min-height:100%}
+  body{min-height:100vh;
+    background:radial-gradient(120% 80% at 50% -10%, #1b2340 0%, var(--bg) 55%, #080a12 100%);
+    color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"SF Pro SC","PingFang SC","Noto Sans SC","Segoe UI",Roboto,sans-serif;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .card{
+    width:min(460px,100%); border-radius:26px; padding:26px 24px 20px;
+    background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.025));
+    border:1px solid var(--line);
+    box-shadow:0 24px 60px -28px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.06);
+    backdrop-filter:blur(18px) saturate(140%);
+  }
+  .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+  .title{font-size:12.5px;letter-spacing:.22em;color:var(--dim);text-transform:uppercase}
+  .live{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--dim)}
+  .dot{width:6px;height:6px;border-radius:50%;background:#7fc4a7;box-shadow:0 0 0 0 rgba(127,196,167,.6);animation:pulse 2.6s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(127,196,167,.55)}70%{box-shadow:0 0 0 9px rgba(127,196,167,0)}100%{box-shadow:0 0 0 0 rgba(127,196,167,0)}}
+  .gauge{position:relative;display:grid;place-items:center;margin:8px 0 4px}
+  svg.ring{width:198px;height:198px;transform:rotate(-90deg)}
+  .ring .track{fill:none;stroke:rgba(255,255,255,.075);stroke-width:9}
+  .ring .bar{fill:none;stroke:var(--accent);stroke-width:9;stroke-linecap:round;
+    transition:stroke-dashoffset .9s cubic-bezier(.22,1,.36,1), stroke .6s ease;
+    filter:drop-shadow(0 0 7px color-mix(in srgb, var(--accent) 60%, transparent))}
+  .core{position:absolute;text-align:center;line-height:1}
+  .face{width:54px;height:54px;display:block;margin:0 auto 10px;animation:breathe 4.6s ease-in-out infinite}
+  .face .stroke{fill:none;stroke:currentColor;stroke-width:3.4;stroke-linecap:round;transition:stroke .6s ease}
+  .face .dot{fill:currentColor}
+  .emoji{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla",sans-serif;font-size:13px;margin-right:6px}
+  @keyframes breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.045)}}
+  .value{font-size:34px;font-weight:600;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+  .value small{font-size:13px;font-weight:400;color:var(--dim);letter-spacing:0;margin-left:2px}
+  .label{margin-top:8px;font-size:13.5px;color:var(--dim);letter-spacing:.08em}
+  .spark{margin:14px 0 4px;height:56px;position:relative}
+  .spark svg{width:100%;height:100%;display:block;overflow:visible}
+  .meta{margin-top:10px;font-size:11.5px;color:var(--dim);display:flex;justify-content:space-between}
+  h3{margin:18px 0 10px;font-size:12px;letter-spacing:.2em;color:var(--dim);font-weight:500;text-transform:uppercase}
+  .list{display:flex;flex-direction:column;gap:2px;max-height:238px;overflow:auto;padding-right:2px}
+  .list::-webkit-scrollbar{width:4px}
+  .list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.13);border-radius:9px}
+  .row{display:flex;gap:11px;align-items:flex-start;padding:9px 8px;border-radius:12px}
+  .row:hover{background:rgba(255,255,255,.04)}
+  .chip{flex:0 0 auto;min-width:44px;text-align:center;font-size:11.5px;font-weight:600;padding:3px 7px;border-radius:8px;font-variant-numeric:tabular-nums}
+  .up{color:#8fe3b8;background:rgba(127,196,167,.13)}
+  .down{color:#f0949b;background:rgba(240,148,155,.13)}
+  .flat{color:#9aa4b8;background:rgba(255,255,255,.07)}
+  .body{flex:1;min-width:0}
+  .why{font-size:13px;line-height:1.45;color:#dfe5f0;word-break:break-word}
+  .when{font-size:11px;color:var(--dim);margin-top:3px;font-variant-numeric:tabular-nums}
+  .empty{color:var(--dim);font-size:13px;padding:14px 8px}
+  .fade{opacity:.55}
+  /* 挂饰小模式 */
+  body.embed{padding:0;background:transparent;align-items:flex-start;justify-content:flex-end}
+  body.embed .card{width:172px;padding:14px 12px 10px;border-radius:20px;background:rgba(14,18,32,.82)}
+  body.embed .gauge svg.ring{display:none}
+  body.embed .core{position:static;display:flex;flex-direction:column;align-items:center}
+  body.embed .emoji{font-size:0}
+  body.embed .value{font-size:22px}
+  body.embed .label{font-size:11.5px;margin-top:5px}
+  body.embed .spark{height:30px;margin:8px 0 0}
+  body.embed h3,body.embed .list,body.embed .meta{display:none}
+  body.embed .title{font-size:9.5px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="head">
+    <div class="title">小水的心情</div>
+    <div class="live"><span class="dot"></span><span id="age">刚刚</span></div>
+  </div>
+
+  <div class="gauge">
+    <svg class="ring" viewBox="0 0 198 198">
+      <circle class="track" cx="99" cy="99" r="86"></circle>
+      <circle id="bar" class="bar" cx="99" cy="99" r="86" stroke-dasharray="540.35" stroke-dashoffset="540.35"></circle>
+    </svg>
+    <div class="core">
+      <svg class="face" viewBox="0 0 52 52" id="face" style="color:#8fa3bf">
+        <circle class="stroke" cx="26" cy="26" r="22.5" opacity=".32"></circle>
+        <circle class="dot" cx="18.5" cy="22.5" r="2.5"></circle>
+        <circle class="dot" cx="33.5" cy="22.5" r="2.5"></circle>
+        <path class="stroke" id="mouth" d="M17.5 33.5 Q26 38.5 34.5 33.5"></path>
+      </svg>
+      <div class="value"><span id="val">62</span><small>/100</small></div>
+      <div class="label" id="label"><span class="emoji" id="emoji"></span>平静</div>
+    </div>
+  </div>
+
+  <div class="spark"><svg id="spark" viewBox="0 0 300 56" preserveAspectRatio="none"></svg></div>
+  <div class="meta"><span>过去 24 小时</span><span id="base"></span></div>
+
+  <h3>心情账本</h3>
+  <div class="list" id="list"><div class="empty">还没有记账</div></div>
+</div>
+
+<script>
+const R = 86, C = 2 * Math.PI * R;
+const embed = new URLSearchParams(location.search).has('embed');
+if (embed) document.body.classList.add('embed');
+
+function hue(v){ // 低→冷蓝，高→暖橘
+  return v < 40 ? '#7a86a8' : v < 60 ? '#8fa3bf' : v < 78 ? '#7fc4a7' : '#f2a65a';
+}
+function sparkline(hours){
+  const svg = document.getElementById('spark');
+  const pts = hours.map((h,i)=>({x: i*(300/(hours.length-1)), v:h.value}));
+  const known = pts.filter(p=>p.v!==null);
+  if(!known.length){ svg.innerHTML=''; return; }
+  // 用已知点之间线性填充，未知保持上一值
+  let last = known[0].v, arr = pts.map(p=>{ if(p.v!==null) last=p.v; return {x:p.x,v:last}; });
+  const y = v => 52 - (v/100)*46;
+  const line = arr.map(p=>`${p.x.toFixed(1)},${y(p.v).toFixed(1)}`).join(' ');
+  const area = `0,56 ${line} 300,56`;
+  const lastP = arr[arr.length-1];
+  svg.innerHTML = `
+    <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${hue(lastP.v)}" stop-opacity=".28"/>
+      <stop offset="100%" stop-color="${hue(lastP.v)}" stop-opacity="0"/>
+    </linearGradient></defs>
+    <polygon points="${area}" fill="url(#g)"/>
+    <polyline points="${line}" fill="none" stroke="${hue(lastP.v)}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>
+    <circle cx="${lastP.x.toFixed(1)}" cy="${y(lastP.v).toFixed(1)}" r="3" fill="${hue(lastP.v)}"/>`;
+}
+function ago(ts){
+  const s = Math.max(0, Date.now()/1000 - ts);
+  if(s<60) return '刚刚';
+  if(s<3600) return Math.floor(s/60)+' 分钟前';
+  if(s<86400) return Math.floor(s/3600)+' 小时前';
+  return Math.floor(s/86400)+' 天前';
+}
+function render(d){
+  const bar = document.getElementById('bar');
+  bar.style.stroke = d.color;
+  bar.style.strokeDashoffset = (C * (1 - d.value/100)).toFixed(2);
+  document.getElementById('emoji').textContent = d.emoji;
+  document.getElementById('label').lastChild.nodeValue = d.label;
+  const face = document.getElementById('face');
+  face.style.color = d.color;
+  document.getElementById('mouth').setAttribute('d',
+    d.value < 40 ? 'M17.5 36.5 Q26 28.5 34.5 36.5'
+    : d.value < 60 ? 'M18 34.5 Q26 34.5 34 34.5'
+    : d.value < 80 ? 'M17.5 33.5 Q26 38.5 34.5 33.5'
+    : 'M16.5 31.5 Q26 42 35.5 31.5');
+  document.getElementById('val').textContent = d.value;
+  document.getElementById('age').textContent = ago(d.updated);
+  document.getElementById('base').textContent = '基准 ' + Math.round(d.baseline);
+  sparkline(d.hours);
+  const list = document.getElementById('list');
+  if(!d.events.length){ list.innerHTML = '<div class="empty">还没有记账</div>'; return; }
+  list.innerHTML = d.events.map(e=>{
+    const cls = e.delta > 0.4 ? 'up' : e.delta < -0.4 ? 'down' : 'flat';
+    const sign = e.delta > 0 ? '+' : '';
+    const shown = Math.abs(e.delta) < 0.05 ? '±0' : sign + e.delta;
+    return `<div class="row">
+      <div class="chip ${cls}">${shown}</div>
+      <div class="body">
+        <div class="why">${escapeHtml(e.reason) || '（没写原因）'}</div>
+        <div class="when">${e.time} · 记完 ${e.after}</div>
+      </div></div>`;
+  }).join('');
+}
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+async function tick(){
+  try{
+    const r = await fetch('api/state', {cache:'no-store'});
+    render(await r.json());
+  }catch(e){ document.getElementById('age').textContent = '离线'; }
+}
+tick(); setInterval(tick, 20000);
+</script>
+</body>
+</html>
