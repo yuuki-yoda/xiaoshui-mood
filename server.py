@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """小水的心情挂饰 —— 极简 HTTP 服务（stdlib，无依赖）。
-监听 127.0.0.1:19005，由 nginx /mood/ 反代。
+仅监听回环接口，可按需配置反向代理。
 路由:
   GET /            挂饰页
   GET /api/state   心情 JSON
